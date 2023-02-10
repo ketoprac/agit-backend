@@ -11,7 +11,7 @@ const findAll = async (req, res) => {
     if (!decoded) {
       return res.status(401).json({ error: "Unauthorized" });
     }
-    const { description, location, full_time, page = 1, limit = 5 } = req.query;
+    const { description, location, full_time, page = 1, limit = 0 } = req.query;
 
     const where = {};
 
@@ -28,13 +28,13 @@ const findAll = async (req, res) => {
     }
 
     if (full_time === "true") {
-      where.type = "full_time";
+      where.type = "Full Time";
     }
 
     const positions = await Position.findAll({
       where,
-      limit: parseInt(limit),
-      offset: (parseInt(page) - 1) * parseInt(limit),
+      limit: limit ? parseInt(limit) : undefined,
+      offset: limit ? (parseInt(page) - 1) * parseInt(limit) : undefined,
     });
 
     return res.json(positions);
@@ -46,6 +46,7 @@ const findAll = async (req, res) => {
     return res.status(500).json({ error: err.message });
   }
 };
+
 
 const findOne = async (req, res) => {
   try {
